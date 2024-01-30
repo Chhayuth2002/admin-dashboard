@@ -1,15 +1,21 @@
 import React from 'react'
 import Select from 'react-select'
 
-export const SingleSelect = ({ data, onChange }) => {
+export const SingleSelect = ({
+  data,
+  onChange,
+  field,
+  form: { touched, errors, setFieldValue }
+}) => {
   return (
     <Select
-      onChange={onChange}
-      name='roles'
-      options={data.map((item, index) => ({
-        value: index,
+      onChange={option => setFieldValue(field.name, option.value)}
+      name={field.name}
+      placeholder={field.placeholder}
+      options={data.map(item => ({
+        value: item,
         label: item.charAt(0).toUpperCase() + item.slice(1)
       }))}
-    ></Select>
+    />
   )
 }

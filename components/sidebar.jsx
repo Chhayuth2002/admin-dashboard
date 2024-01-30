@@ -11,14 +11,9 @@ import {
 import { Nav } from './nav'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { logout } from '@/store/authSlice'
-import { useDispatch } from 'react-redux'
-import { useRouter } from 'next/navigation'
 
 export const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const router = useRouter()
-  const dispatch = useDispatch()
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed)
   }
@@ -40,11 +35,6 @@ export const Sidebar = () => {
       window.removeEventListener('resize', handleWindowResize)
     }
   })
-
-  const handleLogout = () => {
-    dispatch(logout())
-    router.push('/login')
-  }
 
   return (
     <div className='relative max-w-[200px] border-r px-2 pb-10 pt-20'>
@@ -86,7 +76,6 @@ export const Sidebar = () => {
           }
         ]}
       />
-      <Button onClick={handleLogout}>Logout</Button>
     </div>
   )
 }
