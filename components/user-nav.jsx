@@ -10,8 +10,26 @@ import {
 } from './ui/dropdown-menu'
 import { Button } from './ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { useDispatch, useSelector } from 'react-redux'
+import { useRouter } from 'next/navigation'
+import { logout } from '@/store/authSlice'
 
 export const UserNav = () => {
+  const { user } = useSelector(state => state.auth)
+  const dispatch = useDispatch()
+  const router = useRouter()
+
+  const intials = user?.name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+
+  const handleLogout = () => {
+    router.push('/login')
+    dispatch(logout())
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -20,17 +38,17 @@ export const UserNav = () => {
           className='relative h-8 w-8 rounded-full border-2'
         >
           <Avatar className='h-8 w-8'>
-            <AvatarImage src='/avatars/01.png' alt='@shadcn' />
-            <AvatarFallback>SC</AvatarFallback>
+            <AvatarImage src={user?.image} alt='avatar' />
+            <AvatarFallback>{intials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-56' align='end' forceMount>
         <DropdownMenuLabel className='font-normal'>
           <div className='flex flex-col space-y-1'>
-            <p className='text-sm font-medium leading-none'>shadcn</p>
+            <p className='text-sm font-medium leading-none'>{user?.username}</p>
             <p className='text-xs leading-none text-muted-foreground'>
-              m@example.com
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -51,7 +69,7 @@ export const UserNav = () => {
           <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>

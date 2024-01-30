@@ -31,7 +31,6 @@ const UserPage = () => {
     <PageContainer
       title='Users'
       description='Centralize user profiles, allowing for easy access to student and instructor information.'
-      href='/users/new'
     >
       <DataTable data={users.data} meta={users.meta} pagination={pagination} />
     </PageContainer>
