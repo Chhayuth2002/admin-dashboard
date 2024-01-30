@@ -1,43 +1,39 @@
 'use client'
 
 import { DataTable } from './data-table'
-import { columns } from './columns'
 import { useEffect, useState } from 'react'
-import { UsersApi } from '@/app/api/users-api'
+import { userList } from '@/app/api/users'
 import { PageContainer } from '@/components/page-container'
+import { useSelector } from 'react-redux'
 
 const UserPage = () => {
-  const payments = [
-    {
-      id: '728ed52f',
-      amount: 100,
-      status: 'pending',
-      email: 'm@example.com'
-    },
-    {
-      id: '489e1d42',
-      amount: 125,
-      status: 'processing',
-      email: 'example@gmail.com'
+  const { token } = useSelector(state => state.auth)
+  const [users, setUsers] = useState([])
+
+  const pagination = async (page, perPage) => {
+    const res = await userList(token, page, perPage)
+    setUsers(res)
+  }
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await userList(token)
+        setUsers(res)
+      } catch (error) {
+        console.log(error.message)
+      }
     }
-  ]
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [users, setUsers] = []
-  // useEffect(() => {
-  //   setIsLoading(true)
-
-  //   UsersApi.getAll(true)
-  //     .then(res => setUsers(res))
-  //     .catch(err => console.log(err.message))
-  // }, [])
+    fetchUser()
+  }, [token])
 
   return (
     <PageContainer
       title='Users'
       description='Centralize user profiles, allowing for easy access to student and instructor information.'
+      href='/users/new'
     >
-      <DataTable columns={columns} data={payments} />
+      <DataTable data={users.data} meta={users.meta} pagination={pagination} />
     </PageContainer>
   )
 }
