@@ -1,14 +1,15 @@
-'use client'
-
+import { MultiSelect } from '@/components/multi-select'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  ColumnFiltersState,
-  getFilteredRowModel,
-  getPaginationRowModel
-} from '@tanstack/react-table'
-
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from '@/components/ui/pagination'
 import {
   Table,
   TableBody,
@@ -17,155 +18,86 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { ChevronDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useState } from 'react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
 
-export const DataTable = ({ columns, data }) => {
-  const [columnFilters, setColumnFilters] = useState()
+export const DataTable = ({ data, meta, pagination, category }) => {
+  const [filter, setFilter] = useState([])
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    state: {
-      columnFilters
-    }
-  })
+  const handleSelect = e => {
+    pagination(meta.currentPage, e.target.value, filter)
+  }
+
+  const filterCategories = selectedCategory => {
+    setFilter(selectedCategory)
+    pagination(meta.currentPage, meta.perPage, selectedCategory)
+  }
 
   return (
     <div className='w-full'>
-      <div className='flex items-center py-4'>
-        <Input
+      <div className='flex items-center p-2 border rounded-md w-full my-2 bg-white'>
+        {/* <Input
           placeholder='Filter name...'
           value={table.getColumn('name')?.getFilterValue() ?? ''}
           onChange={event =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className='max-w-sm'
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='outline' className='ml-auto'>
-              Columns <ChevronDown className='ml-2 h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            {table
-              .getAllColumns()
-              .filter(column => column.getCanHide())
-              .map(column => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className='capitalize'
-                    checked={column.getIsVisible()}
-                    onCheckedChange={value => column.toggleVisibility(!!value)}
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        /> */}
+        <div className='w-full'>
+          <Label className=''>Filter categories</Label>
+          <MultiSelect onChange={filterCategories} data={category} />
+        </div>
       </div>
-      <div className='rounded-md border'>
+      <div className='rounded-md border bg-white'>
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
+            <TableRow>
+              <TableHead className='w-[100px]'>No.</TableHead>
+              <TableHead>Name</TableHead>
+              {/* <TableHead>Summary</TableHead> */}
+              <TableHead>Created at</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
           </TableHeader>
           <TableBody>
-            {table?.getRowModel()?.rows?.length ? (
-              table?.getRowModel()?.rows.map(row => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                  No results.
+            {data?.map(item => (
+              <TableRow key={item.id}>
+                <TableCell className='font-medium'>{item.id}</TableCell>
+                <TableCell>{item.name}</TableCell>
+                {/* <TableCell>{item.summary}</TableCell> */}
+                <TableCell>
+                  {new Date(item.created_at * 1000).toLocaleDateString()}
                 </TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </div>
       <div className='flex items-center justify-end space-x-2 py-4'>
         <div className='flex-1 text-sm text-muted-foreground'>
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          total of {meta?.total} results
         </div>
         <div className='space-x-2'>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+          <Pagination>
+            <PaginationContent>
+              {meta?.pages?.map(page => (
+                <PaginationItem key={page}>
+                  <Button
+                    onClick={() => pagination(page + 1, meta.perPage, filter)}
+                    variant={meta.currentPage === page ? 'outline' : 'ghost'}
+                  >
+                    {page + 1}
+                  </Button>
+                </PaginationItem>
+              ))}
+            </PaginationContent>
+          </Pagination>
         </div>
         <div className='space-x-2'>
           <select
+            onChange={handleSelect}
             className='rounded-md bg-white focus:ring-black border border-slate-200 p-2 text-sm font-medium '
-            value={table.getState().pagination.pageSize}
-            onChange={e => {
-              table.setPageSize(Number(e.target.value))
-            }}
           >
             {[10, 20, 30, 40, 50].map(pageSize => (
               <option key={pageSize} value={pageSize}>
@@ -174,6 +106,34 @@ export const DataTable = ({ columns, data }) => {
             ))}
           </select>
         </div>
+        {/* <div className='space-x-2'>
+          <Pagination>
+            <PaginationContent>
+              {meta?.pages?.map((page, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink href='#'>{page + 1}</PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationLink href='#'>1</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#' isActive>
+                  2
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>3</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href='#' />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div> */}
       </div>
     </div>
   )

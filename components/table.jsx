@@ -1,4 +1,3 @@
-import { userList } from '@/app/api/users'
 import { Button } from '@/components/ui/button'
 import {
   Pagination,
@@ -35,7 +34,7 @@ export const DataTable = ({ data, meta, pagination }) => {
           className='max-w-sm'
         /> */}
       </div>
-      <div className='rounded-md border bg-white'>
+      <div className='rounded-md border'>
         <Table>
           <TableHeader>
             <TableRow>
@@ -69,7 +68,7 @@ export const DataTable = ({ data, meta, pagination }) => {
                   <PaginationLink href='#'>
                     <Button
                       onClick={() => pagination(page + 1, meta.perPage)}
-                      variant={meta.currentPage === page ? 'outline' : 'ghost'}
+                      variant={meta.currentPage === page ? 'default' : 'ghost'}
                     >
                       {page + 1}
                     </Button>

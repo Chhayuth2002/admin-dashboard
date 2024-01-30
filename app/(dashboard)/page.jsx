@@ -5,6 +5,7 @@ import { BarChart } from '@/components/bar-chart'
 import { Card } from '@/components/card'
 import { PageContainer } from '@/components/page-container'
 import { Activity, CreditCard, DollarSign, Users } from 'lucide-react'
+import { useSelector } from 'react-redux'
 
 const cardData = [
   {
@@ -67,10 +68,12 @@ const uesrSalesData = [
 ]
 
 const DashboardPage = () => {
+  const { user } = useSelector(state => state.auth)
+
   return (
     <PageContainer
       title='Dasboard'
-      description='Welcome to our Course Management Dashboard'
+      description={`Welcome ${user?.username} to our Course Management Dashboard`}
     >
       <div className='flex flex-col gap-5 w-full'>
         <section className='grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4'>
@@ -85,12 +88,12 @@ const DashboardPage = () => {
           ))}
         </section>
         <section className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
-          <div className='flex w-full flex-col gap-3 rounded-xl border p-5 shadow'>
+          <div className='flex w-full flex-col gap-3 rounded-xl border p-5 shadow bg-white'>
             <p className='p-4 font-semibold'>Overview</p>
             <BarChart />
           </div>
 
-          <div className='flex w-full flex-col gap-3 rounded-xl border p-5 shadow'>
+          <div className='flex w-full flex-col gap-3 rounded-xl border p-5 shadow bg-white'>
             <p className=' font-semibold'>Recent Courses</p>
             <p className='text-sm text-gray-400'>hahaha</p>
             {uesrSalesData.map((data, index) => (

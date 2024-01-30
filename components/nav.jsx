@@ -18,9 +18,9 @@ export const Nav = ({ items, isCollapsed }) => {
     <TooltipProvider>
       <div
         data-collapsed={isCollapsed}
-        className='group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2'
+        className='group flex flex-col gap-4 py-2 justify-between h-4/5'
       >
-        <nav className='grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2'>
+        <nav className='grid gap-1 px-2  '>
           {items.map((item, index) =>
             isCollapsed ? (
               <Tooltip key={index} delayDuration={0}>
@@ -29,11 +29,11 @@ export const Nav = ({ items, isCollapsed }) => {
                     passHref={true}
                     href={item.href}
                     className={cn(
+                      'h-9 w-9',
                       buttonVariants({
                         variant: item.href === pathName ? 'default' : 'ghost',
                         size: 'icon'
                       }),
-                      'h-9 w-9',
                       item.variant === 'default' &&
                         'dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white'
                     )}

@@ -2,14 +2,17 @@
 
 import { PageContainer } from '@/components/page-container'
 import React from 'react'
+import { CourseForm } from './_components/course-form'
 
-const CourseForm = () => {
+const CoursePage = () => {
   return (
     <PageContainer
       title='Create course'
       description='Start by defining the fundamental details of your course, including the title, description, and objectives.'
-    ></PageContainer>
+    >
+      <CourseForm />
+    </PageContainer>
   )
 }
 
-export default CourseForm
+export default CoursePage
