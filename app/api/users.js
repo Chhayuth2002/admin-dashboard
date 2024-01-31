@@ -17,15 +17,3 @@ export const userShow = async id => {
   const response = await api.get(`/users/${id}`)
   return response.data
 }
-
-export const createUser = async (token, data) => {
-  const response = await api.post('/users', data, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-
-  console.log(response.data)
-
-  return response.data
-}

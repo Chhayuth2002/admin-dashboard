@@ -1,19 +1,28 @@
 import { api } from '@/utils/axios'
+import moment from 'moment/moment'
 
-export const courseList = async (
-  page,
-  perPage,
-  selectCategory,
-  selectTag,
-  orderBy
-) => {
+const formatDate = date => {
+  return moment(date, 'YYYY-MM-DD', true).isValid()
+    ? moment(date).format('YYYY-MM-DD')
+    : null
+}
+
+export const courseList = async (page, filter, orderBy) => {
+  const categoryIds = filter.selectedCategory.map(cat => cat.value)
+  const from_date = formatDate(filter.dateRange.fromDate)
+  const to_date = formatDate(filter.dateRange.toDate)
+
+  console.log('from_date', from_date)
+  console.log('to_date', to_date)
+
   const response = await api.get('/courses', {
     params: {
-      category_ids: selectCategory?.map(cat => cat.value),
-      tags: selectTag,
+      category_ids: categoryIds,
       page,
-      per_page: perPage,
-      order_by: orderBy
+      search: filter?.name,
+      order_by: orderBy,
+      from_date,
+      to_date
     }
   })
 

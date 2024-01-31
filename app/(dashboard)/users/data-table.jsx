@@ -1,5 +1,7 @@
 import { userList } from '@/app/api/users'
+import { DatePicker } from '@/components/date-picker'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Pagination,
   PaginationContent,
@@ -25,15 +27,12 @@ export const DataTable = ({ data, meta, pagination }) => {
 
   return (
     <div className='w-full'>
-      <div className='flex items-center py-4'>
-        {/* <Input
-          placeholder='Filter name...'
-          value={table.getColumn('name')?.getFilterValue() ?? ''}
-          onChange={event =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
+      <div className='flex items-center py-4 bg-white p-2 my-2 rounded-md border '>
+        <Input
+          placeholder='Filter name or email...'
           className='max-w-sm'
-        /> */}
+          onChange={e => console.log(e.target.value)}
+        />
       </div>
       <div className='rounded-md border bg-white'>
         <Table>
@@ -42,7 +41,7 @@ export const DataTable = ({ data, meta, pagination }) => {
               <TableHead className='w-[100px]'>No.</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead className='text-right'>Action</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
