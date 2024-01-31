@@ -33,6 +33,8 @@ const UserPage = () => {
       description='Centralize user profiles, allowing for easy access to student and instructor information.'
     >
       <DataTable data={users.data} meta={users.meta} pagination={pagination} />
+
+      <h1>user</h1>
     </PageContainer>
   )
 }
