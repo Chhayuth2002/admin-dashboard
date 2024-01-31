@@ -72,7 +72,7 @@ export const Sidebar = () => {
             title: 'Settings',
             icon: Settings,
             variant: 'ghost',
-            href: '/settings'
+            href: '/settings/profile'
           }
         ]}
       />
