@@ -1,5 +1,5 @@
 import { DatePicker } from '@/components/date-picker'
-import { MultiSelect } from '@/components/multi-select'
+import { RowAction } from '@/components/row-action'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import Select from 'react-select'
 import { useEffect, useState } from 'react'
 
 export const DataTable = ({ data, meta, pagination, category }) => {
@@ -71,11 +72,13 @@ export const DataTable = ({ data, meta, pagination, category }) => {
           </div>
         </div>
 
-        <div className=''>
-          <MultiSelect
-            placeholder='Filter category'
+        <div className='flex gap-2'>
+          <Select
+            className='w-full'
+            isMulti
+            closeMenuOnSelect={false}
             onChange={filterCategories}
-            data={category}
+            options={category.map(cat => ({ value: cat.id, label: cat.name }))}
           />
         </div>
       </div>
@@ -91,17 +94,29 @@ export const DataTable = ({ data, meta, pagination, category }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map(item => (
-              <TableRow key={item.id}>
-                <TableCell className='font-medium'>{item.id}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                {/* <TableCell>{item.summary}</TableCell> */}
-                <TableCell>
-                  {new Date(item.created_at * 1000).toLocaleDateString()}
+            {meta?.total > 0 ? (
+              <>
+                {data?.map(item => (
+                  <TableRow key={item.id}>
+                    <TableCell className='font-medium'>{item.id}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    {/* <TableCell>{item.summary}</TableCell> */}
+                    <TableCell>
+                      {new Date(item.created_at * 1000).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <RowAction />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} className='h-24 text-center'>
+                  No results.
                 </TableCell>
-                <TableCell>Action</TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>

@@ -12,9 +12,6 @@ export const courseList = async (page, filter, orderBy) => {
   const from_date = formatDate(filter.dateRange.fromDate)
   const to_date = formatDate(filter.dateRange.toDate)
 
-  console.log('from_date', from_date)
-  console.log('to_date', to_date)
-
   const response = await api.get('/courses', {
     params: {
       category_ids: categoryIds,

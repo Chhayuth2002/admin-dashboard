@@ -1,5 +1,6 @@
 import { userList } from '@/app/api/users'
 import { DatePicker } from '@/components/date-picker'
+import { RowAction } from '@/components/row-action'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -19,11 +20,16 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { useEffect, useState } from 'react'
 
 export const DataTable = ({ data, meta, pagination }) => {
-  const handleSelect = e => {
-    pagination(meta.currentPage, e.target.value)
-  }
+  const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    pagination(meta?.currentPage, filter)
+  }, [filter])
+
+  console.log(filter)
 
   return (
     <div className='w-full'>
@@ -31,7 +37,7 @@ export const DataTable = ({ data, meta, pagination }) => {
         <Input
           placeholder='Filter name or email...'
           className='max-w-sm'
-          onChange={e => console.log(e.target.value)}
+          onChange={e => setFilter(e.target.value)}
         />
       </div>
       <div className='rounded-md border bg-white'>
@@ -45,14 +51,26 @@ export const DataTable = ({ data, meta, pagination }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map(item => (
-              <TableRow key={item.id}>
-                <TableCell className='font-medium'>{item.id}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell>Action</TableCell>
+            {meta?.total > 0 ? (
+              <>
+                {data?.map(item => (
+                  <TableRow key={item.id}>
+                    <TableCell className='font-medium'>{item.id}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>
+                      <RowAction />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} className='h-24 text-center'>
+                  No results.
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
@@ -67,7 +85,7 @@ export const DataTable = ({ data, meta, pagination }) => {
                 <PaginationItem key={page}>
                   <PaginationLink href='#'>
                     <Button
-                      onClick={() => pagination(page + 1, meta.perPage)}
+                      onClick={() => pagination(page + 1, filter)}
                       variant={meta.currentPage === page ? 'outline' : 'ghost'}
                     >
                       {page + 1}
@@ -77,18 +95,6 @@ export const DataTable = ({ data, meta, pagination }) => {
               ))}
             </PaginationContent>
           </Pagination>
-        </div>
-        <div className='space-x-2'>
-          <select
-            onChange={handleSelect}
-            className='rounded-md bg-white focus:ring-black border border-slate-200 p-2 text-sm font-medium '
-          >
-            {[10, 20, 30, 40, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
     </div>
