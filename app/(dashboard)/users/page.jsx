@@ -10,8 +10,8 @@ const UserPage = () => {
   const { token } = useSelector(state => state.auth)
   const [users, setUsers] = useState([])
 
-  const pagination = async (page, perPage) => {
-    const res = await userList(token, page, perPage)
+  const pagination = async (page,filter) => {
+    const res = await userList(token, page,filter)
     setUsers(res)
   }
   useEffect(() => {
@@ -33,6 +33,8 @@ const UserPage = () => {
       description='Centralize user profiles, allowing for easy access to student and instructor information.'
     >
       <DataTable data={users.data} meta={users.meta} pagination={pagination} />
+
+      <h1>user</h1>
     </PageContainer>
   )
 }

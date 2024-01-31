@@ -1,13 +1,13 @@
 import { api } from '@/utils/axios'
 
-export const userList = async (token, page, perPage) => {
+export const userList = async (token, page,filter) => {
   const response = await api.get('/users', {
     headers: {
       Authorization: `Bearer ${token}`
     },
     params: {
-      page,
-      per_page: perPage
+      page, 
+      name:filter
     }
   })
   return response.data
