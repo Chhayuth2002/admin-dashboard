@@ -3,7 +3,7 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 const Input = React.forwardRef(
-  ({ className, type, field, form: { touched, errors }, ...props }, ref) => {
+  ({ className, type, field, form, ...props }, ref) => {
     return (
       <>
         <input
@@ -16,7 +16,8 @@ const Input = React.forwardRef(
           ref={ref}
           {...props}
         />
-        {touched[field.name] && errors[field.name] && (
+
+        {form?.touched[field.name] && form?.errors[field.name] && (
           <div className='error mt-2 text-sm text-rose-500 italic'>
             {errors[field.name]}
           </div>

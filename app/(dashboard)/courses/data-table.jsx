@@ -1,14 +1,11 @@
+import { DatePicker } from '@/components/date-picker'
 import { MultiSelect } from '@/components/multi-select'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious
+  PaginationItem
 } from '@/components/ui/pagination'
 import {
   Table,
@@ -18,34 +15,68 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const DataTable = ({ data, meta, pagination, category }) => {
-  const [filter, setFilter] = useState([])
+  const [filters, setFilters] = useState({
+    selectedCategory: [],
+    name: '',
+    dateRange: {
+      fromDate: null,
+      toDate: null
+    }
+  })
 
-  const handleSelect = e => {
-    pagination(meta.currentPage, e.target.value, filter)
+  useEffect(() => {
+    pagination(meta?.currentPage, filters)
+  }, [filters])
+
+  const handleFilterChange = (filterName, value) => {
+    setFilters(prev => ({ ...prev, [filterName]: value }))
   }
 
   const filterCategories = selectedCategory => {
-    setFilter(selectedCategory)
-    pagination(meta.currentPage, meta.perPage, selectedCategory)
+    handleFilterChange('selectedCategory', selectedCategory)
+  }
+  const filterName = e => {
+    handleFilterChange('name', e.target.value)
+  }
+
+  const onSelectDate = (field, date) => {
+    setFilters(prev => ({
+      ...prev,
+      dateRange: {
+        ...prev.dateRange,
+        [field]: date
+      }
+    }))
   }
 
   return (
     <div className='w-full'>
-      <div className='flex items-center p-2 border rounded-md w-full my-2 bg-white'>
-        {/* <Input
-          placeholder='Filter name...'
-          value={table.getColumn('name')?.getFilterValue() ?? ''}
-          onChange={event =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className='max-w-sm'
-        /> */}
-        <div className='w-full'>
-          <Label className=''>Filter categories</Label>
-          <MultiSelect onChange={filterCategories} data={category} />
+      <div className='flex flex-col gap-2 p-2 border rounded-md w-full my-2 bg-white justify-between'>
+        <div className='flex justify-between gap-2'>
+          <Input onChange={filterName} placeholder='Filter name...' />
+          <div className='flex gap-2'>
+            <DatePicker
+              placeholder='From date'
+              onSelect={onSelectDate}
+              field='fromDate'
+            />
+            <DatePicker
+              placeholder='To date'
+              onSelect={onSelectDate}
+              field='toDate'
+            />
+          </div>
+        </div>
+
+        <div className=''>
+          <MultiSelect
+            placeholder='Filter category'
+            onChange={filterCategories}
+            data={category}
+          />
         </div>
       </div>
       <div className='rounded-md border bg-white'>
@@ -81,10 +112,10 @@ export const DataTable = ({ data, meta, pagination, category }) => {
         <div className='space-x-2'>
           <Pagination>
             <PaginationContent>
-              {meta?.pages?.map(page => (
+              {meta?.pages.map(page => (
                 <PaginationItem key={page}>
                   <Button
-                    onClick={() => pagination(page + 1, meta.perPage, filter)}
+                    onClick={() => pagination(page + 1, filters)}
                     variant={meta.currentPage === page ? 'outline' : 'ghost'}
                   >
                     {page + 1}
@@ -94,46 +125,6 @@ export const DataTable = ({ data, meta, pagination, category }) => {
             </PaginationContent>
           </Pagination>
         </div>
-        <div className='space-x-2'>
-          <select
-            onChange={handleSelect}
-            className='rounded-md bg-white focus:ring-black border border-slate-200 p-2 text-sm font-medium '
-          >
-            {[10, 20, 30, 40, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* <div className='space-x-2'>
-          <Pagination>
-            <PaginationContent>
-              {meta?.pages?.map((page, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink href='#'>{page + 1}</PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationLink href='#'>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href='#' isActive>
-                  2
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href='#'>3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href='#' />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div> */}
       </div>
     </div>
   )
