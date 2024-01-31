@@ -1,3 +1,8 @@
+import { categoriesList } from '@/app/api/categories'
+import { tagsList } from '@/app/api/tags'
+import { InputFile } from '@/components/input-file'
+import { MultiSelect } from '@/components/multi-select'
+import { SingleSelect } from '@/components/single-select'
 import {
   Accordion,
   AccordionContent,
@@ -8,14 +13,15 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Formik, Form, Field, FieldArray } from 'formik'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 const initValue = {
   name: '',
   category_id: '',
-  image_url: '',
+  image: '',
   summary: '',
   tags: [],
+  image: '',
   removeTag: [],
   chapters: [
     {
@@ -25,17 +31,17 @@ const initValue = {
         {
           name: '',
           content: '',
-          image_url: ''
+          image: ''
         },
         {
           name: '',
           content: '',
-          image_url: ''
+          image: ''
         },
         {
           name: '',
           content: '',
-          image_url: ''
+          image: ''
         }
       ]
     },
@@ -46,7 +52,7 @@ const initValue = {
         {
           name: '',
           content: '',
-          image_url: ''
+          image: ''
         }
       ]
     }
@@ -54,34 +60,69 @@ const initValue = {
 }
 
 export const CourseForm = () => {
+  const [tags, setTags] = useState([])
+  const [categories, setCategories] = useState([])
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const res = await tagsList()
+
+        setTags(res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const fetchCategories = async () => {
+      try {
+        const res = await categoriesList()
+        setCategories(res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchCategories()
+    fetchTags()
+  }, [])
+
   return (
     <Formik
       enableReinitialize={true}
       initialValues={initValue}
       onSubmit={values => console.log(values)}
     >
-      {({ values, dirty, resetForm, setValues }) => {
+      {({ values, dirty }) => {
+        console.log(values)
         return (
-          <Form>
+          <Form className='bg-white p-4 rounded-md border shadow-sm'>
             <div className='flex gap-6'>
               <Field name='name' component={Input} placeholder='Course name' />
-              <Field name='name' component={Input} placeholder='Category' />
+              <Field
+                name='category_id'
+                options={categories}
+                placeholder='Select category'
+                component={SingleSelect}
+              />
             </div>
-            <div className='pt-4'>
-              <Field name='name' component={Input} placeholder='Tag' />
+            <div className='py-2'>
+              <Field
+                name='tags'
+                options={tags}
+                component={MultiSelect}
+                placeholder='Select tags'
+              />
             </div>
-            <div className='py-4'>
+            <div className='py-2'>
               <Field
                 name='summary'
                 component={Textarea}
                 placeholder='Course summary'
               />
             </div>
-
+            <div className='py-2'>
+              <Field name='image' component={InputFile} />
+            </div>
             <section className='pt-2 border-t'>
-              {/* <div className='py-2'>
-                <h1 className=' font-semibold text-lg'>Chapter</h1>
-              </div> */}
               <FieldArray name='chapters'>
                 {({ remove, push }) => (
                   <>
@@ -136,19 +177,23 @@ export const CourseForm = () => {
                                               {lessonForm.name || 'Untitle'}
                                             </AccordionTrigger>
                                             <AccordionContent>
-                                              <div className='p-2'>
+                                              <div className='p-2 flex flex-col gap-2'>
                                                 <Field
                                                   name={`chapters.${chapterIndex}.lessons.${lessonIndex}.name`}
                                                   component={Input}
                                                   placeholder='Lesson name'
                                                 />
-                                                <div className='py-4'>
-                                                  <Field
-                                                    name={`chapters.${chapterIndex}.lessons.${lessonIndex}.content`}
-                                                    component={Textarea}
-                                                    placeholder='Lesson content'
-                                                  />
-                                                </div>
+
+                                                <Field
+                                                  name={`chapters.${chapterIndex}.lessons.${lessonIndex}.content`}
+                                                  component={Textarea}
+                                                  placeholder='Lesson content'
+                                                />
+
+                                                <Field
+                                                  name={`chapters.${chapterIndex}.lessons.${lessonIndex}.image`}
+                                                  component={InputFile}
+                                                />
                                               </div>
                                             </AccordionContent>
                                           </AccordionItem>
@@ -163,7 +208,7 @@ export const CourseForm = () => {
                                           push({
                                             name: '',
                                             content: '',
-                                            image_url: ''
+                                            image: ''
                                           })
                                         }
                                       >
@@ -190,7 +235,7 @@ export const CourseForm = () => {
                               {
                                 name: '',
                                 content: '',
-                                image_url: ''
+                                image: ''
                               }
                             ]
                           })
@@ -203,8 +248,7 @@ export const CourseForm = () => {
                 )}
               </FieldArray>
             </section>
-
-            <Button className='mt-2' type='submit'>
+            <Button className='mt-2' type='submit' disabled={!dirty}>
               Submit
             </Button>
           </Form>

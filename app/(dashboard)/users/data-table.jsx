@@ -1,5 +1,6 @@
 import { userList } from '@/app/api/users'
 import { DatePicker } from '@/components/date-picker'
+import { RowAction } from '@/components/row-action'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {DropdownMenu, DropdownMenuItem, DropdownMenuTrigger,DropdownMenuContent} from '@/components/ui/dropdown-menu' 
@@ -83,17 +84,6 @@ export const DataTable = ({ data, meta, pagination }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-
-            {data?.map(item => (
-              <TableRow key={item.id}>
-                <TableCell className='font-medium'>{item.id}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell>{new Date(item.created_at * 1000).toLocaleDateString()}</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            ))}
-
           </TableBody>
         </Table>
       </div>
@@ -109,7 +99,7 @@ export const DataTable = ({ data, meta, pagination }) => {
                 <PaginationItem key={page}>
                   <PaginationLink href='#'>
                     <Button
-                      onClick={() => pagination(page + 1,filter)}
+                      onClick={() => pagination(page + 1, filter)}
                       variant={meta.currentPage === page ? 'outline' : 'ghost'}
                     >
                       {page + 1}
@@ -121,18 +111,6 @@ export const DataTable = ({ data, meta, pagination }) => {
             </PaginationContent>
           </Pagination>
         </div>
-        {/* <div className='space-x-2'>
-          <select
-            onChange={handleSelect}
-            className='rounded-md bg-white focus:ring-black border border-slate-200 p-2 text-sm font-medium '
-          >
-            {[10, 20, 30, 40, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
-          </select>
-        </div> */}
       </div>
     </div>
   )
