@@ -16,7 +16,7 @@ import { Button } from './ui/button'
 import { MoreVertical } from 'lucide-react'
 import { AlertModal } from './alert-modal'
 
-export const RowAction = ({ labels, task }) => {
+export const RowAction = ({ labels, task, id }) => {
   const [open, setOpen] = useState(false)
   return (
     <>
