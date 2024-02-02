@@ -2,17 +2,20 @@
 
 import { DataTable } from './data-table'
 import { useEffect, useState } from 'react'
-import { userList } from '@/app/api/users'
+import { userList,userDelete,userRestore } from '@/app/api/users'
 import { PageContainer } from '@/components/page-container'
 import { useSelector } from 'react-redux'
+import { toast } from 'sonner'
 
 const UserPage = () => {
   const { token } = useSelector(state => state.auth)
   const [users, setUsers] = useState([])
+  
   const pagination = async (page,filter) => {
     const res = await userList(token, page,filter)
     setUsers(res)
   }
+  
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -24,7 +27,7 @@ const UserPage = () => {
     }
 
     fetchUser()
-  }, [token])
+  }, [token])  
 
   return (
     <PageContainer
@@ -33,7 +36,6 @@ const UserPage = () => {
     >
       <DataTable data={users.data} meta={users.meta} pagination={pagination} />
 
-      <h1>user</h1>
     </PageContainer>
   )
 }
