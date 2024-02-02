@@ -8,13 +8,12 @@ const formatDate = date => {
 }
 
 export const courseList = async (page, filter, orderBy) => {
-  const categoryIds = filter.categories.map(cat => cat.value)
   const fromDate = formatDate(filter.from_date)
   const toDate = formatDate(filter.to_date)
 
   const response = await api.get('/courses', {
     params: {
-      category_ids: categoryIds,
+      category_ids: filter.categories,
       page,
       search: filter.name,
       order_by: orderBy,

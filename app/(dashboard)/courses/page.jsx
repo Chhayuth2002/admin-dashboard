@@ -41,8 +41,8 @@ const CousePage = () => {
     fetchCategories()
   }, [])
 
-  const filterParams = async (page, perPage, selectedCategories) => {
-    const res = await courseList(page, perPage, selectedCategories)
+  const filterParams = async (page, filter) => {
+    const res = await courseList(page, filter)
     setCourses(res)
   }
 
