@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input'
 import Select from 'react-select'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { isString } from 'formik'
+import moment, { isDate } from 'moment'
 
 export const DataTable = ({ data, meta, filterParams, category }) => {
   const router = useRouter()
@@ -30,12 +30,13 @@ export const DataTable = ({ data, meta, filterParams, category }) => {
     ?.get('categories')
     ?.split(',')
     .map(item => Number(item))
+
   const paramName = searchParams.get('name')
   const paramFrom = searchParams.get('from_date')
   const paramTo = searchParams.get('to_date')
 
   const [filters, setFilters] = useState({
-    categories: [],
+    categories: paramCat,
     name: paramName || '',
     from_date: paramFrom || null,
     to_date: paramTo || null
@@ -54,8 +55,9 @@ export const DataTable = ({ data, meta, filterParams, category }) => {
 
   // filter categories
   const filterCategories = categories => {
-    handleFilterChange('categories', categories)
-    paramsQuery('categories', categories)
+    const categoriesIds = categories.map(item => item.value)
+    handleFilterChange('categories', categoriesIds)
+    paramsQuery('categories', categoriesIds)
   }
 
   // filter name
@@ -66,58 +68,44 @@ export const DataTable = ({ data, meta, filterParams, category }) => {
 
   // filter date
   const onSelectDate = (field, date) => {
-    handleFilterChange(field, date)
-
+    const formatDate = moment(date).format('YYYY-MM-DD')
+    console.log(formatDate)
     if (date !== undefined) {
-      paramsQuery(field, date)
+      handleFilterChange(field, formatDate)
+      paramsQuery(field, formatDate)
     }
   }
 
   // params
   const paramsQuery = (name, value) => {
     const params = new URLSearchParams(searchParams)
-
+    // const arrayParams = []
     // add params
     if (Array.isArray(value)) {
-      const stringValue = value.map(v => v.value).join(',')
-      params.set(name, stringValue)
+      params.set(name, value.join(','))
     } else {
       params.set(name, value)
     }
-
     // remove params
     if (!value || (Array.isArray(value) && value.length === 0)) {
       params.delete(name, value)
     }
 
-    // get params key and contruct a new query string
+    router.push(pathname + '?' + params)
+
+    // get params key and contruct a new query string with the key
     const queryString = Array.from(params.keys())
       .map(key => `${key}=${params.get(key)}`)
       .join('&')
 
     const newUrl = `${pathname}?${queryString}`
 
-    router.push(newUrl, undefined, { shallow: true })
+    router.push(newUrl, undefined, { scroll: false })
   }
-
-  // filter the initial params
-  useEffect(() => {
-    const initialFilters = {
-      categories:
-        paramCat !== null
-          ? category.filter(item => paramCat.includes(item.value))
-          : []
-    }
-
-    setFilters(prev => ({ ...prev, initialFilters }))
-    filterParams(meta?.currentPage || searchParams.get('page'), initialFilters)
-  }, [])
 
   useEffect(() => {
     filterParams(meta?.currentPage || searchParams.get('page'), filters)
   }, [filters])
-
-  console.log(filters)
 
   return (
     <div className='w-full'>
@@ -131,12 +119,14 @@ export const DataTable = ({ data, meta, filterParams, category }) => {
           <div className='flex gap-2'>
             <DatePicker
               placeholder='From date'
-              onSelect={onSelectDate}
+              onSelectDate={onSelectDate}
+              date={filters?.from_date}
               field='from_date'
             />
             <DatePicker
               placeholder='To date'
-              onSelect={onSelectDate}
+              onSelectDate={onSelectDate}
+              date={filters?.to_date}
               field='to_date'
             />
           </div>
@@ -146,7 +136,9 @@ export const DataTable = ({ data, meta, filterParams, category }) => {
           <Select
             className='w-full'
             isMulti
-            value={category.filter(item => paramCat?.includes(item.value))}
+            value={category.filter(item =>
+              filters.categories?.includes(item.value)
+            )}
             closeMenuOnSelect={false}
             onChange={filterCategories}
             options={category}
