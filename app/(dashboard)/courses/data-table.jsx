@@ -1,7 +1,3 @@
-import { DatePicker } from '@/components/date-picker'
-import { RowAction } from '@/components/row-action'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Pagination,
   PaginationContent,
@@ -15,59 +11,133 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { DatePicker } from '@/components/date-picker'
+import { RowAction } from '@/components/row-action'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import Select from 'react-select'
 import { useEffect, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { isString } from 'formik'
 
-export const DataTable = ({ data, meta, pagination, category }) => {
+export const DataTable = ({ data, meta, filterParams, category }) => {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // get initial params key value
+  const paramCat = searchParams
+    ?.get('categories')
+    ?.split(',')
+    .map(item => Number(item))
+  const paramName = searchParams.get('name')
+  const paramFrom = searchParams.get('from_date')
+  const paramTo = searchParams.get('to_date')
+
   const [filters, setFilters] = useState({
-    selectedCategory: [],
-    name: '',
-    dateRange: {
-      fromDate: null,
-      toDate: null
-    }
+    categories: [],
+    name: paramName || '',
+    from_date: paramFrom || null,
+    to_date: paramTo || null
   })
 
-  useEffect(() => {
-    pagination(meta?.currentPage, filters)
-  }, [filters])
+  // change page
+  const onChangePage = page => {
+    filterParams(page, filters)
+    paramsQuery('page', page)
+  }
 
+  // filter change
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }))
   }
 
-  const filterCategories = selectedCategory => {
-    handleFilterChange('selectedCategory', selectedCategory)
-  }
-  const filterName = e => {
-    handleFilterChange('name', e.target.value)
+  // filter categories
+  const filterCategories = categories => {
+    handleFilterChange('categories', categories)
+    paramsQuery('categories', categories)
   }
 
-  const onSelectDate = (field, date) => {
-    setFilters(prev => ({
-      ...prev,
-      dateRange: {
-        ...prev.dateRange,
-        [field]: date
-      }
-    }))
+  // filter name
+  const filterName = e => {
+    handleFilterChange('name', e.target.value)
+    paramsQuery('name', e.target.value)
   }
+
+  // filter date
+  const onSelectDate = (field, date) => {
+    handleFilterChange(field, date)
+
+    if (date !== undefined) {
+      paramsQuery(field, date)
+    }
+  }
+
+  // params
+  const paramsQuery = (name, value) => {
+    const params = new URLSearchParams(searchParams)
+
+    // add params
+    if (Array.isArray(value)) {
+      const stringValue = value.map(v => v.value).join(',')
+      params.set(name, stringValue)
+    } else {
+      params.set(name, value)
+    }
+
+    // remove params
+    if (!value || (Array.isArray(value) && value.length === 0)) {
+      params.delete(name, value)
+    }
+
+    // get params key and contruct a new query string
+    const queryString = Array.from(params.keys())
+      .map(key => `${key}=${params.get(key)}`)
+      .join('&')
+
+    const newUrl = `${pathname}?${queryString}`
+
+    router.push(newUrl, undefined, { shallow: true })
+  }
+
+  // filter the initial params
+  useEffect(() => {
+    const initialFilters = {
+      categories:
+        paramCat !== null
+          ? category.filter(item => paramCat.includes(item.value))
+          : []
+    }
+
+    setFilters(prev => ({ ...prev, initialFilters }))
+    filterParams(meta?.currentPage || searchParams.get('page'), initialFilters)
+  }, [])
+
+  useEffect(() => {
+    filterParams(meta?.currentPage || searchParams.get('page'), filters)
+  }, [filters])
+
+  console.log(filters)
 
   return (
     <div className='w-full'>
       <div className='flex flex-col gap-2 p-2 border rounded-md w-full my-2 bg-white justify-between'>
         <div className='flex justify-between gap-2'>
-          <Input onChange={filterName} placeholder='Filter name...' />
+          <Input
+            value={filters.name ? filters.name : ''}
+            onChange={filterName}
+            placeholder='Filter name...'
+          />
           <div className='flex gap-2'>
             <DatePicker
               placeholder='From date'
               onSelect={onSelectDate}
-              field='fromDate'
+              field='from_date'
             />
             <DatePicker
               placeholder='To date'
               onSelect={onSelectDate}
-              field='toDate'
+              field='to_date'
             />
           </div>
         </div>
@@ -76,9 +146,10 @@ export const DataTable = ({ data, meta, pagination, category }) => {
           <Select
             className='w-full'
             isMulti
+            value={category.filter(item => paramCat?.includes(item.value))}
             closeMenuOnSelect={false}
             onChange={filterCategories}
-            options={category.map(cat => ({ value: cat.id, label: cat.name }))}
+            options={category}
           />
         </div>
       </div>
@@ -88,7 +159,6 @@ export const DataTable = ({ data, meta, pagination, category }) => {
             <TableRow>
               <TableHead className='w-[100px]'>No.</TableHead>
               <TableHead>Name</TableHead>
-              {/* <TableHead>Summary</TableHead> */}
               <TableHead>Created at</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
@@ -100,7 +170,6 @@ export const DataTable = ({ data, meta, pagination, category }) => {
                   <TableRow key={item.id}>
                     <TableCell className='font-medium'>{item.id}</TableCell>
                     <TableCell>{item.name}</TableCell>
-                    {/* <TableCell>{item.summary}</TableCell> */}
                     <TableCell>
                       {new Date(item.created_at * 1000).toLocaleDateString()}
                     </TableCell>
@@ -130,7 +199,7 @@ export const DataTable = ({ data, meta, pagination, category }) => {
               {meta?.pages.map(page => (
                 <PaginationItem key={page}>
                   <Button
-                    onClick={() => pagination(page + 1, filters)}
+                    onClick={() => onChangePage(page + 1)}
                     variant={meta.currentPage === page ? 'outline' : 'ghost'}
                   >
                     {page + 1}
