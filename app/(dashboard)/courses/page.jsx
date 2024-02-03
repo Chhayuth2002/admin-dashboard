@@ -41,8 +41,8 @@ const CousePage = () => {
     fetchCategories()
   }, [])
 
-  const pagination = async (page, perPage, selectedCategories) => {
-    const res = await courseList(page, perPage, selectedCategories)
+  const filterParams = async (page, filter) => {
+    const res = await courseList(page, filter)
     setCourses(res)
   }
 
@@ -56,8 +56,8 @@ const CousePage = () => {
         data={courses.data}
         meta={courses.meta}
         loading={isLoading}
-        pagination={pagination}
-        category={categories}
+        filterParams={filterParams}
+        category={categories.map(cat => ({ value: cat.id, label: cat.name }))}
       />
     </PageContainer>
   )

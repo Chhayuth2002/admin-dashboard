@@ -29,7 +29,6 @@ const LoginPage = () => {
   const router = useRouter()
   const handleLogin = async (values, action) => {
     const res = await dispatch(loginAsync(values))
-
     if (res.payload !== undefined) {
       toast.success('Login success')
       router.push('/')

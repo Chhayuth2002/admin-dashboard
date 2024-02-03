@@ -92,7 +92,6 @@ export const CourseForm = () => {
       onSubmit={(values) => console.log(values)}
     >
       {({ values, dirty }) => {
-        console.log(values);
         return (
           <Form className="bg-white p-4 rounded-md border shadow-sm">
             <div className="border border-slate-300 p-4 rounded-md bg-slate-100">

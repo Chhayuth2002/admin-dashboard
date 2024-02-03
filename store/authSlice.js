@@ -21,7 +21,7 @@ const authSlice = createSlice({
         state.error = null
       })
       .addCase(loginAsync.fulfilled, (state, action) => {
-        state.isLoading = false
+        state.isLoading = true
         state.user = action.payload?.user
         state.token = action.payload?.token
       })
