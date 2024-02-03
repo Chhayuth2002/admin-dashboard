@@ -50,6 +50,7 @@ export const CourseForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { token } = useSelector(state => state.auth)
+
   useEffect(() => {
     const fetchTags = async () => {
       try {

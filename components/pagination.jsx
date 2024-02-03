@@ -2,7 +2,6 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious
 } from './ui/pagination'
@@ -16,31 +15,32 @@ const TablePagination = ({ handlePagination, meta, filter }) => {
       </div>
       <div className='space-x-2'>
         <Pagination>
-          <PaginationContent>
+          {meta?.currentPage !== meta?.pages[0] && (
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => handlePagination(meta?.previous, filter)}
+                onClick={() => handlePagination(meta.previous, filter)}
               />
             </PaginationItem>
-
-            {meta?.pages?.map(page => (
+          )}
+          <PaginationContent>
+            {meta?.pages.map(page => (
               <PaginationItem key={page}>
-                <PaginationLink href='#'>
-                  <Button
-                    onClick={() => handlePagination(page + 1, filter)}
-                    variant={meta.currentPage === page ? 'outline' : 'ghost'}
-                  >
-                    {page + 1}
-                  </Button>
-                </PaginationLink>
+                <Button
+                  onClick={() => handlePagination(page + 1, filter)}
+                  variant={meta.currentPage === page ? 'outline' : 'ghost'}
+                >
+                  {page + 1}
+                </Button>
               </PaginationItem>
             ))}
 
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => handlePagination(meta?.next, filter)}
-              />
-            </PaginationItem>
+            {meta?.currentPage < meta?.pages[meta?.pages.length - 1] && (
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePagination(meta.next, filter)}
+                />
+              </PaginationItem>
+            )}
           </PaginationContent>
         </Pagination>
       </div>
