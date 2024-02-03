@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { DataTable } from './data-table'
+import { CourseTable } from './_components/course-table'
 import { PageContainer } from '@/components/page-container'
 import { courseList } from '@/app/api/courses'
 import { categoriesList } from '@/app/api/categories'
@@ -52,7 +52,7 @@ const CousePage = () => {
       description='Manage course details, schedules, and enrollment capacities in real-time.'
       href='/courses/new'
     >
-      <DataTable
+      <CourseTable
         data={courses.data}
         meta={courses.meta}
         loading={isLoading}

@@ -30,7 +30,7 @@ export const courseShow = async id => {
   return response.data
 }
 
-export const courseCreate = async () => {
+export const courseCreate = async (token, data) => {
   const formData = new FormData()
   formData.append('name', data.name)
   formData.append('summary', data.summary)
@@ -57,6 +57,10 @@ export const courseCreate = async () => {
     formData.append(`tags[${i}][__isNew__]`, tag.__isNew__)
   })
 
-  const response = await api.post('/courses', formData)
+  const response = await api.post('/courses', formData, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
   return response.data
 }
