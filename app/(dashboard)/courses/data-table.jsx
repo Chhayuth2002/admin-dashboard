@@ -11,16 +11,15 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { DatePicker } from "@/components/date-picker";
-import { RowAction } from "@/components/row-action";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Select from "react-select";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import moment, { isDate } from "moment";
+} from '@/components/ui/table'
+import { DatePicker } from '@/components/date-picker'
+import { RowAction } from '@/components/row-action'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import Select from 'react-select'
+import { useEffect, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import moment from 'moment'
 
 export const DataTable = ({ data, meta, filterParams, category }) => {
   const router = useRouter();

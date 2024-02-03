@@ -1,5 +1,3 @@
-'use client'
-
 import { PageContainer } from '@/components/page-container'
 import React from 'react'
 import { CourseForm } from './_components/course-form'
